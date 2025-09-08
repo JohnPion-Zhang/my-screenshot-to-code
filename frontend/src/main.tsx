@@ -9,19 +9,32 @@ import PairwiseEvalsPage from "./components/evals/PairwiseEvalsPage";
 import RunEvalsPage from "./components/evals/RunEvalsPage.tsx";
 import BestOfNEvalsPage from "./components/evals/BestOfNEvalsPage.tsx";
 import AllEvalsPage from "./components/evals/AllEvalsPage.tsx";
+import KnowledgeGraphPage from "./pages/KnowledgeGraphPage.tsx";
 
-ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
-    <Router>
-      <Routes>
-        <Route path="/" element={<App />} />
-        <Route path="/all-evals" element={<AllEvalsPage />} />
-        <Route path="/evals" element={<EvalsPage />} />
-        <Route path="/pairwise-evals" element={<PairwiseEvalsPage />} />
-        <Route path="/best-of-n-evals" element={<BestOfNEvalsPage />} />
-        <Route path="/run-evals" element={<RunEvalsPage />} />
-      </Routes>
-    </Router>
-    <Toaster toastOptions={{ className: "dark:bg-zinc-950 dark:text-white" }} />
-  </React.StrictMode>
-);
+async function enableMocking() {
+  if (import.meta.env.DEV) {
+    const { worker } = await import('./mocks/browser');
+    // `worker.start()` returns a Promise that resolves
+    // once the Service Worker is up and ready to intercept requests.
+    return worker.start();
+  }
+}
+
+enableMocking().then(() => {
+  ReactDOM.createRoot(document.getElementById("root")!).render(
+    <React.StrictMode>
+      <Router>
+        <Routes>
+          <Route path="/" element={<App />} />
+          <Route path="/knowledge-graph" element={<KnowledgeGraphPage />} />
+          <Route path="/all-evals" element={<AllEvalsPage />} />
+          <Route path="/evals" element={<EvalsPage />} />
+          <Route path="/pairwise-evals" element={<PairwiseEvalsPage />} />
+          <Route path="/best-of-n-evals" element={<BestOfNEvalsPage />} />
+          <Route path="/run-evals" element={<RunEvalsPage />} />
+        </Routes>
+      </Router>
+      <Toaster toastOptions={{ className: "dark:bg-zinc-950 dark:text-white" }} />
+    </React.StrictMode>
+  );
+});
